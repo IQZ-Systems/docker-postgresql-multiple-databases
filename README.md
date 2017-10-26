@@ -3,48 +3,29 @@
 The [official recommendation](https://hub.docker.com/_/postgres/) for creating
 multiple databases is as follows:
 
-*If you would like to do additional initialization in an image derived from
-this one, add one or more `*.sql`, `*.sql.gz`, or `*.sh` scripts under
-`/docker-entrypoint-initdb.d` (creating the directory if necessary). After the
-entrypoint calls `initdb` to create the default `postgres` user and database,
-it will run any `*.sql` files and source any `*.sh` scripts found in that
-directory to do further initialization before starting the service.*
+_If you would like to do additional initialization in an image derived from
+this one, add one or more \`_.sql`,`_.sql.gz`, or`_.sh`scripts under`/docker-entrypoint-initdb.d`(creating the directory if necessary). After the
+entrypoint calls`initdb`to create the default`postgres`user and database,
+it will run any`_.sql`files and source any`_.sh\` scripts found in that
+directory to do further initialization before starting the service.\*
 
 This directory contains a script to create multiple databases using that
 mechanism.
 
 ## Usage
 
-### By mounting a volume
+Open `docker-compose.yml` file and edit the `POSTGRES_MULTIPLE_DATABASES` environment variable with a list of db names you'd like to be created in the postgres container. The db names should be comma(`,`) separated.
 
-Clone the repository, mount its directory as a volume into
-`/docker-entrypoint-initdb.d` and declare database names separated by commas in
-`POSTGRES_MULTIPLE_DATABASES` environment variable as follows
-(`docker-compose` syntax):
+Save the file and simpy run:
 
-    myapp-postgresql:
-        image: postgres:9.6.2
-        volumes:
-            - ../docker-posgresql-multiple-databases:/docker-entrypoint-initdb.d
-        environment:
-            - POSTGRES_MULTIPLE_DATABASES=db1,db2
-            - POSTGRES_USER=myapp
-            - POSTGRES_PASSWORD=
+    docker-compose up
 
-### By building a custom image
+to get the container up and running. Your databases would automatically be created and will be exposed by default on port `5432`.
 
-Clone the repository, build and push the image to your Docker repository,
-for example for Google Private Repository do the following:
+# Credits
 
-    docker build --tag=eu.gcr.io/your-project/postgres-multi-db .
-    gcloud docker -- push eu.gcr.io/your-project/postgres-multi-db
+Thanks to [@mrts][original-author-link] for the inspiration and [original script][original-repo-url].
 
-You still need to pass the `POSTGRES_MULTIPLE_DATABASES` environment variable
-to the container:
+[original-author-link]: https://github.com/mrts
 
-    myapp-postgresql:
-        image: eu.gcr.io/your-project/postgres-multi-db
-        environment:
-            - POSTGRES_MULTIPLE_DATABASES=db1,db2
-            - POSTGRES_USER=myapp
-            - POSTGRES_PASSWORD=
+[original-repo-url]: https://github.com/mrts/docker-postgresql-multiple-databases
